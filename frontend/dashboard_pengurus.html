@@ -1,0 +1,1995 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Pengurus - RT/RW Digital</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #d32f2f;
+      --secondary: #b71c1c;
+      --accent: #ff5252;
+      --light: #f5f5f5;
+      --dark: #212529;
+      --gradient: linear-gradient(135deg, #d32f2f, #b71c1c);
+      --gradient-light: linear-gradient(135deg, #ff5252, #d32f2f);
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e3e6ee 100%);
+      color: #333;
+      min-height: 100vh;
+    }
+    
+    /* Sidebar Styles */
+    .sidebar {
+      width: 280px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: var(--gradient);
+      color: #fff;
+      padding-top: 20px;
+      overflow-y: auto;
+      z-index: 1000;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .sidebar-header {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 10px;
+    }
+    
+    .sidebar-header h4 {
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .sidebar-header h4 i {
+      font-size: 1.8rem;
+    }
+    
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      border-radius: 10px;
+      margin: 6px 12px;
+      transition: all 0.3s;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .sidebar a i {
+      margin-right: 12px;
+      font-size: 1.2rem;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .sidebar a:hover, .sidebar a.active {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateX(5px);
+    }
+    
+    .sidebar a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: white;
+      transform: scaleY(0);
+      transition: transform 0.3s;
+    }
+    
+    .sidebar a.active::after {
+      transform: scaleY(1);
+    }
+    
+    /* Content Styles */
+    .content {
+      margin-left: 280px;
+      padding: 20px;
+      min-height: 100vh;
+      transition: margin-left 0.3s;
+    }
+    
+    /* Topbar Styles */
+    .topbar {
+      background: #fff;
+      padding: 15px 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    
+    .topbar h5 {
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gradient-light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-weight: bold;
+    }
+    
+    /* Card Styles */
+    .card {
+      border-radius: 16px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.07);
+      margin-bottom: 25px;
+      border: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+      overflow: hidden;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+      background: white;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 18px 20px;
+      font-weight: 600;
+    }
+    
+    .card-body {
+      padding: 20px;
+    }
+    
+    /* Dashboard Stats */
+    .stat-card {
+      text-align: center;
+      padding: 25px 15px;
+      border-radius: 16px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 0;
+    }
+    
+    .stat-card .bi {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .stat-card h3 {
+      font-weight: 700;
+      margin-bottom: 5px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .stat-card p {
+      margin: 0;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Section Management */
+    .section {
+      display: none;
+    }
+    
+    .section.active {
+      display: block;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    
+    /* Table Styles */
+    .table-responsive {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .table thead {
+      background: var(--gradient);
+      color: white;
+    }
+    
+    .table th {
+      border: none;
+      padding: 15px;
+      font-weight: 600;
+    }
+    
+    .table td {
+      padding: 12px 15px;
+      vertical-align: middle;
+    }
+    
+    /* Badge Styles */
+    .badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+    
+    /* Form Styles */
+    .form-control, .form-select {
+      border-radius: 10px;
+      padding: 12px 15px;
+      border: 1px solid #e1e5ee;
+      transition: all 0.3s;
+    }
+    
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.25rem rgba(211, 47, 47, 0.25);
+    }
+    
+    /* Button Styles */
+    .btn {
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: var(--gradient);
+      border: none;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(211, 47, 47, 0.3);
+    }
+    
+    .btn-gradient {
+      background: linear-gradient(135deg, #d32f2f, #b71c1c);
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(211, 47, 47, 0.3);
+      background: linear-gradient(135deg, #ff5252, #d32f2f);
+    }
+    
+    /* Dropzone Styles */
+    .dropzone {
+      border: 2px dashed var(--primary);
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      color: #777;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: #f9f9f9;
+      position: relative;
+    }
+    
+    .dropzone:hover, .dropzone.dragover {
+      background: #ffeaea;
+      border-color: var(--secondary);
+    }
+    
+    .dropzone input[type="file"] {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    
+    .file-info {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      display: none;
+    }
+    
+    .progress {
+      height: 8px;
+      margin-top: 10px;
+      display: none;
+    }
+    
+    /* Mobile Menu Toggle */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1100;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      width: 45px;
+      height: 45px;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Chart Container */
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+    }
+    
+    /* File Item Styles */
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .file-item:last-child {
+      border-bottom: none;
+    }
+    
+    .file-icon {
+      font-size: 1.5rem;
+      margin-right: 12px;
+      color: var(--primary);
+    }
+    
+    .file-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    /* NOTIFICATION STYLES */
+    .notification-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      pointer-events: none;
+    }
+    
+    .notification {
+      background: white;
+      border-radius: 16px;
+      padding: 20px 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border-left: 5px solid;
+      min-width: 350px;
+      max-width: 500px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      animation: slideIn 0.3s ease-out, slideOut 0.3s ease-in 2.7s;
+      pointer-events: auto;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .notification::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      z-index: 0;
+    }
+    
+    .notification-content {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .notification-icon {
+      font-size: 1.8rem;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .notification.success {
+      border-left-color: #28a745;
+    }
+    
+    .notification.success .notification-icon {
+      background: rgba(40, 167, 69, 0.1);
+      color: #28a745;
+    }
+    
+    .notification.error {
+      border-left-color: #dc3545;
+    }
+    
+    .notification.error .notification-icon {
+      background: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+    
+    .notification.warning {
+      border-left-color: #ffc107;
+    }
+    
+    .notification.warning .notification-icon {
+      background: rgba(255, 193, 7, 0.1);
+      color: #ffc107;
+    }
+    
+    .notification.info {
+      border-left-color: #17a2b8;
+    }
+    
+    .notification.info .notification-icon {
+      background: rgba(23, 162, 184, 0.1);
+      color: #17a2b8;
+    }
+    
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-size: 1.1rem;
+    }
+    
+    .notification-message {
+      color: #666;
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+      }
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .content {
+        margin-left: 0;
+      }
+      
+      .menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+      }
+      
+      .overlay.active {
+        display: block;
+      }
+      
+      .notification {
+        min-width: 300px;
+        max-width: 90vw;
+        margin: 0 20px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .content {
+        padding: 15px;
+      }
+      
+      .topbar {
+        padding: 12px 18px;
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+      }
+      
+      .user-info {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .file-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      
+      .file-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+      
+      .notification {
+        padding: 15px 20px;
+        min-width: 280px;
+      }
+      
+      .notification-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+      }
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--secondary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Menu Toggle -->
+  <button class="menu-toggle" id="menuToggle">
+    <i class="bi bi-list"></i>
+  </button>
+  
+  <!-- Overlay for Mobile -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Notification Container -->
+  <div class="notification-container" id="notificationContainer"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h4><i class="bi bi-house-gear"></i> RT/RW Digital</h4>
+      <small class="text-light opacity-75">Panel Pengurus</small>
+    </div>
+    <a href="#" class="active" onclick="showSection('dashboard')"><i class="bi bi-house-door"></i> Dashboard</a>
+    <a href="#" onclick="showSection('penduduk')"><i class="bi bi-people"></i> Data Penduduk</a>
+    <a href="#" onclick="showSection('informasi')"><i class="bi bi-megaphone"></i> Informasi</a>
+    <a href="#" onclick="showSection('bukuKas')"><i class="bi bi-wallet2"></i> Buku Kas Warga</a>
+    <a href="#" onclick="showSection('surat')"><i class="bi bi-file-earmark-text"></i> Surat</a>
+    <a href="#" onclick="showSection('kontrol')"><i class="bi bi-gear"></i> Kontrol Sistem</a>
+  </div>
+
+  <!-- Content -->
+  <div class="content" id="content">
+    <!-- Topbar -->
+    <div class="topbar">
+      <h5>Dashboard Pengurus</h5>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">P</div>
+        <span id="userInfo" class="fw-semibold"></span>
+        <button class="btn btn-outline-danger btn-sm" onclick="logout()">
+          <i class="bi bi-box-arrow-right me-1"></i>Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="section active">
+      <div class="row g-4">
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card" style="background: linear-gradient(135deg, #d32f2f, #b71c1c);">
+            <i class="bi bi-people"></i>
+            <h3 id="totalWarga">0</h3>
+            <p>Total Warga</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card" style="background: linear-gradient(135deg, #ff5252, #d32f2f);">
+            <i class="bi bi-person-check"></i>
+            <h3 id="pendingUsers">0</h3>
+            <p>Pending Verifikasi</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card" style="background: linear-gradient(135deg, #ff7675, #ff5252);">
+            <i class="bi bi-megaphone"></i>
+            <h3 id="infoAktif">0</h3>
+            <p>Informasi Aktif</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card" style="background: linear-gradient(135deg, #ff9f43, #ff7675);">
+            <i class="bi bi-file-text"></i>
+            <h3 id="suratMasuk">0</h3>
+            <p>Surat Masuk</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row mt-4">
+        <div class="col-lg-8">
+          <div class="card">
+            <div class="card-header">
+              <i class="bi bi-bar-chart me-2"></i>Statistik Penduduk
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="populationChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card">
+            <div class="card-header">
+              <i class="bi bi-clock-history me-2"></i>Aktivitas Terbaru
+            </div>
+            <div class="card-body">
+              <div class="list-group list-group-flush" id="aktivitasList">
+                <div class="list-group-item d-flex align-items-center">
+                  <div class="bg-primary text-white rounded p-2 me-3">
+                    <i class="bi bi-person-plus"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-0">Pendaftaran Baru</h6>
+                    <small class="text-muted">Memuat data...</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabel Data Pending -->
+      <div class="card mt-4">
+        <div class="card-body">
+          <h6 class="fw-bold mb-3">Akun Menunggu Verifikasi</h6>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="userTable">
+                <tr>
+                  <td colspan="5" class="text-center text-muted">Memuat data...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Penduduk Section -->
+    <div id="penduduk" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-people me-2"></i>Data Penduduk</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>KK</th>
+                  <th>Alamat</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="pendudukTable">
+                <tr>
+                  <td colspan="5" class="text-center text-muted">Memuat data...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informasi Section -->
+    <div id="informasi" class="section">
+      <div class="card shadow-lg border-0">
+        <div class="card-header text-white" style="background: linear-gradient(135deg, #d32f2f, #b71c1c);">
+          <h5 class="mb-0"><i class="bi bi-megaphone me-2"></i>Kelola Informasi Kegiatan</h5>
+        </div>
+        <div class="card-body">
+          <form id="formInfo" onsubmit="tambahInformasi(event)">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Judul / Kegiatan</label>
+                <input type="text" class="form-control" id="judulInfo" placeholder="Contoh: Kerja Bakti Minggu Pagi" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Tanggal Kegiatan</label>
+                <input type="date" class="form-control" id="tanggalInfo" required>
+              </div>
+              <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-gradient">
+                  <i class="bi bi-plus-circle me-1"></i>Tambah
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <hr class="my-4">
+
+          <h6 class="fw-bold mb-3"><i class="bi bi-list-task me-2"></i>Daftar Informasi Aktif</h6>
+          <div class="list-group" id="infoList">
+            <div class="text-center text-muted py-3">Memuat data...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buku Kas Warga Section -->
+    <div id="bukuKas" class="section">
+      <div class="card shadow-lg border-0">
+        <div class="card-header text-white" style="background: linear-gradient(135deg, #d32f2f, #b71c1c);">
+          <h5 class="mb-0"><i class="bi bi-wallet2 me-2"></i>Buku Kas Warga</h5>
+        </div>
+        <div class="card-body">
+
+          <!-- Daftar Pembayaran Iuran -->
+          <h4 class="mt-2 mb-3 fw-bold text-danger"><i class="bi bi-cash-stack me-2"></i>Daftar Pembayaran Iuran</h4>
+          <div class="table-responsive mb-4">
+            <table class="table table-striped align-middle">
+              <thead class="table-danger text-white">
+                <tr>
+                  <th>No</th>
+                  <th>Username</th>
+                  <th>Bulan</th>
+                  <th>Jumlah</th>
+                  <th>Metode</th>
+                  <th>Bukti</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tabelPembayaran">
+                <tr>
+                  <td colspan="8" class="text-center text-muted">Memuat data...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Buku Transaksi per KK -->
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="fw-bold mb-0"><i class="bi bi-journal-text me-2 text-primary"></i>Buku Transaksi per KK</h5>
+            <button class="btn btn-gradient btn-lg d-flex align-items-center gap-2 shadow-sm" onclick="printLaporanBukuKas()">
+              <i class="bi bi-printer"></i> <span>Cetak Laporan Buku Kas</span>
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle border">
+              <thead class="table-primary">
+                <tr>
+                  <th>KK</th>
+                  <th>Nama</th>
+                  <th>Total Iuran</th>
+                  <th>Terakhir Bayar</th>
+                </tr>
+              </thead>
+              <tbody id="bukuKasTable">
+                <tr><td colspan="4" class="text-center text-muted">Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Surat Section -->
+    <div id="surat" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Kelola Surat</h5>
+        </div>
+        <div class="card-body">
+          <h6 class="fw-bold mb-3">Upload Surat</h6>
+          <div class="dropzone mt-3" id="dropzone">
+            <i class="bi bi-cloud-arrow-up fs-1 text-primary"></i>
+            <p class="mt-2">Klik atau tarik file surat ke sini</p>
+            <small class="text-muted">Format yang didukung: PDF, DOC, DOCX, JPG, PNG (Maks. 10MB)</small>
+            <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple>
+          </div>
+          
+          <div class="file-info" id="fileInfo">
+            <div class="d-flex justify-content-between align-items-center">
+              <span id="fileName">Nama file akan muncul di sini</span>
+              <span id="fileSize" class="text-muted"></span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+            </div>
+          </div>
+          
+          <div class="mt-3">
+            <button class="btn btn-primary" id="uploadBtn" disabled>
+              <i class="bi bi-upload me-2"></i>Upload File
+            </button>
+            <button class="btn btn-outline-secondary" id="cancelBtn" style="display: none;">
+              <i class="bi bi-x-circle me-2"></i>Batal
+            </button>
+          </div>
+          
+          <h6 class="fw-bold mt-4 mb-3">Daftar Surat</h6>
+          <div class="list-group" id="suratList">
+            <div class="text-center text-muted py-3">Memuat data...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kontrol Sistem Section -->
+    <div id="kontrol" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Kontrol Sistem</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <div class="card border-danger">
+                <div class="card-body text-center">
+                  <i class="bi bi-exclamation-triangle fs-1 text-danger"></i>
+                  <h5 class="mt-3">Reset Database</h5>
+                  <p class="text-muted">Hati-hati! Tindakan ini akan menghapus semua data</p>
+                  <button class="btn btn-outline-danger mt-2" data-bs-toggle="modal" data-bs-target="#resetModal">
+                    <i class="bi bi-arrow-clockwise me-2"></i>Reset Database
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-4">
+              <div class="card border-success">
+                <div class="card-body text-center">
+                  <i class="bi bi-download fs-1 text-success"></i>
+                  <h5 class="mt-3">Export Data</h5>
+                  <p class="text-muted">Unduh semua data dalam format Excel</p>
+                  <button class="btn btn-outline-success mt-2" onclick="exportData()">
+                    <i class="bi bi-file-earmark-spreadsheet me-2"></i>Export Data
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card border-info">
+            <div class="card-header bg-info text-white">
+              <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Statistik Sistem</h6>
+            </div>
+            <div class="card-body">
+              <div class="row text-center">
+                <div class="col-md-3 col-6 mb-3">
+                  <h4 class="text-primary" id="statPenggunaAktif">0</h4>
+                  <small class="text-muted">Pengguna Aktif</small>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                  <h4 class="text-success" id="statTotalSurat">0</h4>
+                  <small class="text-muted">Total Surat</small>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                  <h4 class="text-warning" id="statInfoAktif">0</h4>
+                  <small class="text-muted">Informasi Aktif</small>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                  <h4 class="text-info">98%</h4>
+                  <small class="text-muted">Ketersediaan Sistem</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Confirmation Modal -->
+  <div class="modal fade" id="resetModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Konfirmasi Reset Database</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Apakah Anda yakin ingin mereset database? Tindakan ini akan menghapus semua data dan tidak dapat dibatalkan.</p>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="confirmReset">
+            <label class="form-check-label" for="confirmReset">
+              Saya memahami konsekuensi dari tindakan ini
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-danger" id="resetButton" disabled>Reset Database</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Konstanta API
+    const API_URL = "http://127.0.0.1:8000";
+
+    // =============================
+    // 🎯 NOTIFICATION SYSTEM
+    // =============================
+    
+    function showNotification(type, title, message) {
+      const container = document.getElementById('notificationContainer');
+      const notificationId = 'notif-' + Date.now();
+      
+      const icons = {
+        success: 'bi-check-circle-fill',
+        error: 'bi-x-circle-fill',
+        warning: 'bi-exclamation-triangle-fill',
+        info: 'bi-info-circle-fill'
+      };
+      
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.id = notificationId;
+      notification.innerHTML = `
+        <div class="notification-icon">
+          <i class="bi ${icons[type]}"></i>
+        </div>
+        <div class="notification-content">
+          <div class="notification-title">${title}</div>
+          <p class="notification-message">${message}</p>
+        </div>
+      `;
+      
+      container.appendChild(notification);
+      
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+        const notif = document.getElementById(notificationId);
+        if (notif) {
+          notif.style.animation = 'slideOut 0.3s ease-in forwards';
+          setTimeout(() => notif.remove(), 300);
+        }
+      }, 3000);
+    }
+
+    // Mobile menu toggle functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const content = document.getElementById('content');
+    
+    menuToggle.addEventListener('click', function() {
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    });
+    
+    overlay.addEventListener('click', function() {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+    
+    // User data
+    const username = localStorage.getItem("username") || "Pengurus RT";
+    const role = localStorage.getItem("role") || "pengurus";
+    
+    if (!localStorage.getItem("username")) {
+      localStorage.setItem("username", "Pengurus RT");
+      localStorage.setItem("role", "pengurus");
+    }
+    
+    document.getElementById("userInfo").innerText = username;
+    document.getElementById("userAvatar").innerText = username.charAt(0);
+
+    // Initialize chart
+    let populationChart;
+    
+    function initChart() {
+      const ctx = document.getElementById('populationChart').getContext('2d');
+      populationChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['RT 01', 'RT 02', 'RT 03', 'RT 04', 'RT 05', 'RT 06'],
+          datasets: [{
+            label: 'Jumlah Penduduk',
+            data: [45, 52, 38, 48, 56, 42],
+            backgroundColor: [
+              'rgba(211, 47, 47, 0.7)',
+              'rgba(255, 82, 82, 0.7)',
+              'rgba(255, 118, 117, 0.7)',
+              'rgba(255, 159, 67, 0.7)',
+              'rgba(255, 193, 7, 0.7)',
+              'rgba(76, 175, 80, 0.7)'
+            ],
+            borderColor: [
+              'rgba(211, 47, 47, 1)',
+              'rgba(255, 82, 82, 1)',
+              'rgba(255, 118, 117, 1)',
+              'rgba(255, 159, 67, 1)',
+              'rgba(255, 193, 7, 1)',
+              'rgba(76, 175, 80, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Jumlah Penduduk'
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'RT'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            title: {
+              display: true,
+              text: 'Distribusi Penduduk per RT'
+            }
+          }
+        }
+      });
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "/loginpage";
+    }
+
+    function showSection(id, event) {
+      // Update active section
+      document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      
+      // Update active sidebar link
+      document.querySelectorAll(".sidebar a").forEach(link => link.classList.remove("active"));
+      if (event) {
+        event.target.classList.add("active");
+      }
+
+      // Load data berdasarkan section
+      if (id === "bukuKas") {
+        loadPembayaran();
+        loadBukuKas();
+      }
+      if (id === "informasi") {
+        loadInformasi();
+      }
+      if (id === "surat") {
+        loadSuratList();
+      }
+      if (id === "penduduk") {
+        loadPenduduk();
+      }
+      if (id === "kontrol") {
+        loadStatistikSistem();
+      }
+
+      // Close sidebar on mobile after selection
+      if (window.innerWidth < 992) {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      }
+    }
+    
+    // Load total penduduk
+    async function loadTotalPenduduk() {
+      try {
+        const response = await fetch(`${API_URL}/penduduk/count`);
+        const data = await response.json();
+        document.getElementById("totalWarga").innerText = data.total || 0;
+      } catch (err) {
+        console.error("Gagal memuat total penduduk:", err);
+        document.getElementById("totalWarga").innerText = "0";
+      }
+    }
+
+    // Load tabel penduduk
+    async function loadPenduduk() {
+      try {
+        const response = await fetch(`${API_URL}/penduduk`);
+        const data = await response.json();
+        const tableBody = document.getElementById("pendudukTable");
+        tableBody.innerHTML = "";
+      
+        if (data.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Tidak ada data penduduk</td></tr>`;
+          return;
+        }
+
+        data.forEach(p => {
+          const row = `
+            <tr>
+              <td>${p.nama || "-"}</td>
+              <td>${p.kk || "-"}</td>
+              <td>${p.alamat || "-"}</td>
+              <td><span class="badge bg-success">Aktif</span></td>
+              <td>
+                <button class="btn btn-success btn-sm" onclick="verifikasiPenduduk(${p.id}, '${p.nama}')">
+                  <i class="bi bi-check-lg"></i> Verifikasi
+                </button>
+              </td>
+            </tr>
+          `;
+          tableBody.innerHTML += row;
+        });
+      } catch (err) {
+        console.error("Gagal memuat data penduduk:", err);
+        document.getElementById("pendudukTable").innerHTML = `<tr><td colspan="5" class="text-center text-danger">Gagal memuat data</td></tr>`;
+      }
+    }
+
+    // Verifikasi penduduk
+    async function verifikasiPenduduk(id, nama) {
+      try {
+        const response = await fetch(`${API_URL}/verify_penduduk/${id}`, { 
+          method: "PUT" 
+        });
+        
+        if (response.ok) {
+          showNotification('success', 'Berhasil!', `Penduduk ${nama} berhasil diverifikasi`);
+          loadPenduduk();
+        } else {
+          showNotification('error', 'Gagal!', `Gagal memverifikasi penduduk ${nama}`);
+        }
+      } catch (err) {
+        showNotification('error', 'Error!', 'Terjadi kesalahan koneksi server');
+      }
+    }
+
+    // Load user pending dari backend
+    async function loadPendingUsers() {
+      try {
+        const response = await fetch(`${API_URL}/pending_users`);
+        const users = await response.json();
+        const tableBody = document.getElementById("userTable");
+        tableBody.innerHTML = "";
+        
+        if (users.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Tidak ada akun pending</td></tr>`;
+          document.getElementById("pendingUsers").innerText = "0";
+          return;
+        }
+
+        document.getElementById("pendingUsers").innerText = users.length;
+        
+        users.forEach(user => {
+          const row = `
+            <tr>
+              <td>${user.id}</td>
+              <td>${user.username}</td>
+              <td>${user.role}</td>
+              <td><span class="badge bg-warning">${user.status}</span></td>
+              <td>
+                <button class="btn btn-success btn-sm" onclick="verifyUser(${user.id}, '${user.username}')">
+                  <i class="bi bi-check-lg me-1"></i>Verifikasi
+                </button>
+              </td>
+            </tr>
+          `;
+          tableBody.innerHTML += row;
+        });
+      } catch (err) {
+        console.error("Gagal memuat user pending:", err);
+        document.getElementById("userTable").innerHTML = `<tr><td colspan="5" class="text-center text-danger">Gagal memuat data</td></tr>`;
+      }
+    }
+
+    // Verifikasi user
+    async function verifyUser(userId, username) {
+      try {
+        const response = await fetch(`${API_URL}/verify_user/${userId}`, { 
+          method: "PUT" 
+        });
+        
+        if (response.ok) {
+          showNotification('success', 'Berhasil!', `User ${username} berhasil diverifikasi`);
+          loadPendingUsers();
+        } else {
+          showNotification('error', 'Gagal!', `Gagal memverifikasi user ${username}`);
+        }
+      } catch (err) {
+        showNotification('error', 'Error!', 'Terjadi kesalahan koneksi server');
+      }
+    }
+
+    // =============================
+    // 📢 INFORMASI KEGIATAN
+    // =============================
+
+    // Muat daftar informasi aktif
+    async function loadInformasi() {
+      try {
+        const res = await fetch(`${API_URL}/informasi`);
+        const data = await res.json();
+        const list = document.getElementById("infoList");
+        list.innerHTML = "";
+
+        if (data.length === 0) {
+          list.innerHTML = `<div class="text-center text-muted py-3">Belum ada informasi kegiatan</div>`;
+          return;
+        }
+
+        data.forEach(info => {
+          const item = document.createElement("div");
+          item.className = "list-group-item d-flex justify-content-between align-items-center";
+          item.innerHTML = `
+            <div>
+              <h6 class="mb-1 text-danger">${info.judul}</h6>
+              <small class="text-muted"><i class="bi bi-calendar-event me-1"></i>${new Date(info.tanggal).toLocaleDateString("id-ID")}</small>
+            </div>
+            <button class="btn btn-outline-danger btn-sm" onclick="hapusInformasi(${info.id}, '${info.judul}')">
+              <i class="bi bi-trash"></i>
+            </button>
+          `;
+          list.appendChild(item);
+        });
+      } catch (err) {
+        console.error("Gagal memuat informasi:", err);
+        document.getElementById("infoList").innerHTML = `<div class="text-center text-danger py-3">Gagal memuat informasi</div>`;
+      }
+    }
+
+    // Tambah informasi baru
+    async function tambahInformasi(e) {
+      e.preventDefault();
+      const judul = document.getElementById("judulInfo").value.trim();
+      const tanggal = document.getElementById("tanggalInfo").value;
+
+      if (!judul || !tanggal) {
+        showNotification('warning', 'Peringatan!', 'Harap isi judul dan tanggal informasi');
+        return;
+      }
+
+      const data = { judul, tanggal };
+      try {
+        const res = await fetch(`${API_URL}/informasi`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+
+        if (res.ok) {
+          showNotification('success', 'Berhasil!', 'Informasi berhasil ditambahkan');
+          document.getElementById("formInfo").reset();
+          loadInformasi();
+          loadInfoAktif();
+        } else {
+          showNotification('error', 'Gagal!', result.detail || "Gagal menambah informasi");
+        }
+      } catch (err) {
+        console.error(err);
+        showNotification('error', 'Error!', 'Gagal terhubung ke server');
+      }
+    }
+
+    // Hapus informasi
+    async function hapusInformasi(id, judul) {
+      if (!confirm(`Hapus informasi "${judul}"?`)) return;
+      
+      try {
+        const res = await fetch(`${API_URL}/informasi/${id}`, { method: "DELETE" });
+        const result = await res.json();
+
+        if (res.ok) {
+          showNotification('success', 'Berhasil!', 'Informasi berhasil dihapus');
+          loadInformasi();
+          loadInfoAktif();
+        } else {
+          showNotification('error', 'Gagal!', result.detail || "Gagal menghapus informasi");
+        }
+      } catch (err) {
+        console.error(err);
+        showNotification('error', 'Error!', 'Terjadi kesalahan saat menghapus');
+      }
+    }
+
+    // ✅ Hitung jumlah informasi aktif
+    async function loadInfoAktif() {
+      try {
+        const res = await fetch(`${API_URL}/informasi`);
+        const data = await res.json();
+        document.getElementById("infoAktif").innerText = data.length;
+        document.getElementById("statInfoAktif").innerText = data.length;
+      } catch (err) {
+        console.error("Gagal memuat jumlah informasi:", err);
+        document.getElementById("infoAktif").innerText = "0";
+      }
+    }
+
+    // ============================
+    // 💰 BUKU KAS WARGA FUNCTIONS
+    // ============================
+
+    async function loadPembayaran() {
+      try {
+        const res = await fetch(`${API_URL}/pembayaran`);
+        const data = await res.json();
+        const tbody = document.getElementById("tabelPembayaran");
+        tbody.innerHTML = "";
+
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Belum ada data pembayaran</td></tr>`;
+          return;
+        }
+
+        data.forEach((p, i) => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${i + 1}</td>
+              <td>${p.username}</td>
+              <td>${p.bulan}</td>
+              <td>Rp ${p.jumlah?.toLocaleString("id-ID") || "0"}</td>
+              <td>${p.metode}</td>
+              <td>${p.bukti_pembayaran ? 
+                `<a href="${API_URL}/bukti_pembayaran/${p.bukti_pembayaran}" target="_blank" class="btn btn-sm btn-outline-primary">Lihat</a>` 
+                : '-'}</td>
+              <td><span class="badge ${p.status === 'verified' ? 'bg-success' : 'bg-warning'}">${p.status}</span></td>
+              <td>
+                ${p.status !== "verified" ? `
+                  <button class="btn btn-success btn-sm" onclick="verifikasiPembayaran(${p.id}, '${p.username}', ${p.jumlah})">
+                    <i class="bi bi-check-lg"></i> ACC
+                  </button>
+                ` : '<span class="text-success"><i class="bi bi-check-circle"></i> Terverifikasi</span>'}
+              </td>
+            </tr>
+          `;
+        });
+      } catch (err) {
+        console.error("Gagal memuat pembayaran:", err);
+        document.getElementById("tabelPembayaran").innerHTML = `<tr><td colspan="8" class="text-center text-danger">Gagal memuat data</td></tr>`;
+      }
+    }
+
+    // Verifikasi pembayaran
+    async function verifikasiPembayaran(id, username, jumlah) {
+      if (!confirm(`Verifikasi pembayaran ${username} sebesar Rp ${jumlah?.toLocaleString("id-ID")}?`)) return;
+      
+      try {
+        const res = await fetch(`${API_URL}/pembayaran/verifikasi/${id}`, { method: "PUT" });
+        if (res.ok) {
+          showNotification('success', 'Berhasil!', `Pembayaran ${username} berhasil diverifikasi`);
+          loadPembayaran();
+          loadBukuKas();
+        } else {
+          showNotification('error', 'Gagal!', `Gagal memverifikasi pembayaran ${username}`);
+        }
+      } catch (err) {
+        showNotification('error', 'Error!', 'Gagal terhubung ke server');
+      }
+    }
+
+    // Muat buku kas warga (per KK)
+    async function loadBukuKas() {
+      try {
+        const res = await fetch(`${API_URL}/buku-kas`);
+        const data = await res.json();
+        const tbody = document.getElementById("bukuKasTable");
+        tbody.innerHTML = "";
+
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Belum ada transaksi</td></tr>`;
+          return;
+        }
+
+        let totalSemua = 0;
+        data.forEach(kas => {
+          totalSemua += kas.total_iuran || 0;
+          tbody.innerHTML += `
+            <tr>
+              <td>${kas.no_kk || "-"}</td>
+              <td>${kas.nama_user || kas.username || "-"}</td>
+              <td>Rp ${Number(kas.total_iuran || 0).toLocaleString("id-ID")}</td>
+              <td>${kas.terakhir_bayar || "-"}</td>
+            </tr>
+          `;
+        });
+
+        tbody.innerHTML += `
+          <tr class="table-success">
+            <td colspan="2" class="text-end"><strong>Total Keseluruhan:</strong></td>
+            <td colspan="2"><strong>Rp ${totalSemua.toLocaleString("id-ID")}</strong></td>
+          </tr>
+        `;
+
+      } catch (err) {
+        console.error("Gagal memuat buku kas:", err);
+        document.getElementById("bukuKasTable").innerHTML = `<tr><td colspan="4" class="text-center text-danger">Gagal memuat data</td></tr>`;
+      }
+    }
+
+    // ============================
+    // 📄 FITUR UPLOAD FILE
+    // ============================
+
+    // Variabel global untuk file yang dipilih
+    let selectedFiles = [];
+    let currentUpload = null;
+
+    // Elemen DOM
+    const fileInput = document.getElementById('fileInput');
+    const dropzone = document.getElementById('dropzone');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressContainer = document.querySelector('.progress');
+    const suratList = document.getElementById('suratList');
+
+    // Event listeners untuk upload
+    fileInput.addEventListener('change', handleFileSelect);
+    uploadBtn.addEventListener('click', handleUpload);
+    cancelBtn.addEventListener('click', cancelUpload);
+
+    // Drag and drop functionality
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight() {
+      dropzone.classList.add('dragover');
+    }
+
+    function unhighlight() {
+      dropzone.classList.remove('dragover');
+    }
+
+    dropzone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleFiles(files);
+    }
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      handleFiles(files);
+    }
+
+    function handleFiles(files) {
+      selectedFiles = Array.from(files);
+      
+      // Validasi file
+      const validFiles = selectedFiles.filter(file => {
+        const validTypes = ['application/pdf', 'application/msword', 
+                           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                           'image/jpeg', 'image/jpg', 'image/png'];
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        
+        if (!validTypes.includes(file.type)) {
+          showNotification('error', 'Format Tidak Didukung', `File ${file.name} tidak didukung. Hanya PDF, DOC, DOCX, JPG, PNG yang diizinkan.`);
+          return false;
+        }
+        
+        if (file.size > maxSize) {
+          showNotification('error', 'File Terlalu Besar', `File ${file.name} terlalu besar. Maksimal 10MB.`);
+          return false;
+        }
+        
+        return true;
+      });
+      
+      if (validFiles.length > 0) {
+        selectedFiles = validFiles;
+        displayFileInfo(selectedFiles[0]); // Tampilkan info file pertama
+        uploadBtn.disabled = false;
+      } else {
+        resetUploadUI();
+      }
+    }
+
+    function displayFileInfo(file) {
+      const fileSizeFormatted = formatFileSize(file.size);
+      const fileType = getFileType(file.type);
+      
+      fileName.textContent = file.name;
+      fileSize.textContent = `${fileSizeFormatted} • ${fileType}`;
+      fileInfo.style.display = 'block';
+      cancelBtn.style.display = 'inline-block';
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function getFileType(mimeType) {
+      const types = {
+        'application/pdf': 'PDF',
+        'application/msword': 'DOC',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
+        'image/jpeg': 'JPG',
+        'image/jpg': 'JPG',
+        'image/png': 'PNG'
+      };
+      return types[mimeType] || 'File';
+    }
+
+    async function handleUpload() {
+      if (selectedFiles.length === 0) return;
+      
+      const file = selectedFiles[0];
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('username', username);
+      formData.append('jenis_surat', 'Surat Keterangan');
+      formData.append('keterangan', 'Upload dari dashboard pengurus');
+
+      uploadBtn.disabled = true;
+      progressContainer.style.display = 'block';
+      
+      // Simulasi progress bar
+      let progress = 0;
+      const progressInterval = setInterval(() => {
+        progress += Math.random() * 20;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(progressInterval);
+        }
+        progressBar.style.width = progress + '%';
+      }, 200);
+
+      try {
+        const response = await fetch(`${API_URL}/upload-surat`, {
+          method: "POST",
+          body: formData,
+        });
+
+        clearInterval(progressInterval);
+        progressBar.style.width = '100%';
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error("Gagal upload file: " + errorText);
+        }
+
+        const result = await response.json();
+        console.log("✅ Upload sukses:", result);
+
+        showNotification('success', 'Upload Berhasil!', `File "${file.name}" berhasil diupload`);
+        resetUploadUI();
+        loadSuratList();
+        loadStatistikSistem();
+      } catch (error) {
+        showNotification('error', 'Upload Gagal!', error.message);
+        console.error(error);
+        resetUploadUI();
+      }
+    }
+
+    function cancelUpload() {
+      if (currentUpload) {
+        clearInterval(currentUpload);
+        currentUpload = null;
+      }
+      resetUploadUI();
+      fileInput.value = '';
+      selectedFiles = [];
+      showNotification('info', 'Dibatalkan', 'Upload file dibatalkan');
+    }
+
+    function resetUploadUI() {
+      fileInfo.style.display = 'none';
+      progressContainer.style.display = 'none';
+      progressBar.style.width = '0%';
+      uploadBtn.disabled = true;
+      cancelBtn.style.display = 'none';
+      cancelBtn.disabled = false;
+    }
+
+    // =============================
+    // 🔥 Load Daftar Surat dari Database
+    // =============================
+    async function loadSuratList() {
+      try {
+        const response = await fetch(`${API_URL}/surat`);
+        if (!response.ok) throw new Error("Gagal memuat data surat");
+
+        const suratListData = await response.json();
+        const suratList = document.getElementById("suratList");
+        suratList.innerHTML = "";
+
+        document.getElementById("suratMasuk").innerText = suratListData.length;
+        document.getElementById("statTotalSurat").innerText = suratListData.length;
+
+        if (suratListData.length === 0) {
+          suratList.innerHTML = `
+            <div class="text-center text-muted py-3">
+              <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+              Belum ada surat yang diupload.
+            </div>`;
+          return;
+        }
+
+        suratListData.forEach((s) => {
+          const fileTypeIcon = getFileIcon(s.nama_file);
+          const fileSizeFormatted = formatFileSize(s.ukuran_file || 0);
+          const tanggalUpload = s.tanggal_upload
+            ? new Date(s.tanggal_upload).toLocaleString("id-ID")
+            : "-";
+
+          const fileItem = document.createElement("div");
+          fileItem.className = "file-item";
+          fileItem.dataset.fileId = s.id;
+
+          fileItem.innerHTML = `
+            <div class="d-flex align-items-center">
+              <i class="bi ${fileTypeIcon} file-icon"></i>
+              <div>
+                <h6 class="mb-1">${s.nama_file}</h6>
+                <small class="text-muted">${s.tipe_file} • ${fileSizeFormatted} • ${tanggalUpload}</small>
+              </div>
+            </div>
+            <div class="file-actions">
+              <button class="btn btn-outline-primary btn-sm" onclick="downloadFileById(${s.id}, '${s.nama_file}')">
+                <i class="bi bi-download"></i>
+              </button>
+              <button class="btn btn-outline-danger btn-sm" onclick="deleteFile(${s.id}, '${s.nama_file}')">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          `;
+
+          suratList.appendChild(fileItem);
+        });
+      } catch (error) {
+        console.error(error);
+        suratList.innerHTML = `<div class="text-center text-danger py-3">Gagal memuat daftar surat</div>`;
+      }
+    }
+
+    // Icon otomatis berdasarkan ekstensi
+    function getFileIcon(filename) {
+      const ext = filename.split(".").pop().toLowerCase();
+      if (ext === "pdf") return "bi-file-earmark-pdf text-danger";
+      if (ext === "doc" || ext === "docx") return "bi-file-earmark-word text-primary";
+      if (ext === "jpg" || ext === "jpeg" || ext === "png") return "bi-file-earmark-image text-success";
+      return "bi-file-earmark text-secondary";
+    }
+
+    // Download berdasarkan ID (aman dari duplikat nama)
+    function downloadFileById(id, filename) {
+      const url = `http://127.0.0.1:8000/download-surat/${encodeURIComponent(filename)}`;
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.click();
+      showNotification('info', 'Download Dimulai', `File ${filename} sedang didownload`);
+    }
+
+    async function deleteFile(fileId, filename) {
+      if (!confirm(`Hapus file "${filename}"?`)) return;
+
+      try {
+        const response = await fetch(`${API_URL}/delete-surat/${fileId}`, {
+          method: "DELETE"
+        });
+
+        if (!response.ok) throw new Error("Gagal menghapus file.");
+
+        const result = await response.json();
+        showNotification('success', 'Berhasil!', `File "${filename}" berhasil dihapus`);
+
+        // Hapus dari tampilan
+        const fileItem = document.querySelector(`[data-file-id="${fileId}"]`);
+        if (fileItem) fileItem.remove();
+        
+        loadSuratList();
+      } catch (error) {
+        showNotification('error', 'Gagal!', error.message);
+      }
+    }
+
+    // =============================
+    // 📊 FUNGSI LAINNYA
+    // =============================
+
+    // ✅ Aktivitas terbaru (gabungan)
+    async function loadAktivitasTerbaru() {
+      try {
+        const [usersRes, iuranRes, suratRes] = await Promise.all([
+          fetch(`${API_URL}/pending_users`),    // akun baru
+          fetch(`${API_URL}/pembayaran`),       // iuran
+          fetch(`${API_URL}/surat`),  // surat
+        ]);
+
+        const users = await usersRes.json();
+        const iuran = await iuranRes.json();
+        const surat = await suratRes.json();
+
+        const aktivitasContainer = document.getElementById("aktivitasList");
+        aktivitasContainer.innerHTML = "";
+
+        // Tambah data dinamis
+        const items = [
+          {
+            icon: "bi-person-plus",
+            color: "bg-primary",
+            title: "Pendaftaran Baru",
+            desc: `${users.length} akun menunggu verifikasi`
+          },
+          {
+            icon: "bi-cash-stack",
+            color: "bg-success",
+            title: "Pembayaran Iuran",
+            desc: `${iuran.length} transaksi tercatat`
+          },
+          {
+            icon: "bi-file-earmark-text",
+            color: "bg-warning",
+            title: "Surat Terupload",
+            desc: `${surat.length} surat di sistem`
+          }
+        ];
+
+        items.forEach(item => {
+          aktivitasContainer.innerHTML += `
+            <div class="list-group-item d-flex align-items-center">
+              <div class="${item.color} text-white rounded p-2 me-3">
+                <i class="bi ${item.icon}"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">${item.title}</h6>
+                <small class="text-muted">${item.desc}</small>
+              </div>
+            </div>
+          `;
+        });
+      } catch (err) {
+        console.error("Gagal memuat aktivitas terbaru:", err);
+        document.getElementById("aktivitasList").innerHTML = `
+          <div class="list-group-item text-center text-muted">
+            Gagal memuat aktivitas
+          </div>
+        `;
+      }
+    }
+
+    async function loadStatistikSistem() {
+      try {
+        const [suratRes, infoRes, pendudukRes] = await Promise.all([
+          fetch(`${API_URL}/surat`),
+          fetch(`${API_URL}/informasi`),
+          fetch(`${API_URL}/penduduk`)
+        ]);
+
+        const surat = await suratRes.json();
+        const info = await infoRes.json();
+        const penduduk = await pendudukRes.json();
+
+        document.getElementById("statTotalSurat").innerText = surat.length;
+        document.getElementById("statInfoAktif").innerText = info.length;
+        document.getElementById("statPenggunaAktif").innerText = penduduk.length;
+      } catch (err) {
+        console.error("Gagal memuat statistik sistem:", err);
+      }
+    }
+
+    function printLaporanBukuKas() {
+      const table = document.getElementById("bukuKasTable").outerHTML;
+      const tanggalCetak = new Date().toLocaleString("id-ID");
+
+      const laporanHTML = `
+        <html>
+        <head>
+          <title>Laporan Buku Kas Warga</title>
+          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+          <style>
+            body { font-family: 'Poppins', sans-serif; margin: 40px; }
+            h2 { text-align: center; color: #d32f2f; font-weight: bold; }
+            h5 { text-align: center; color: #555; margin-bottom: 30px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+            th { background: #d32f2f; color: white; text-align: center; }
+            .text-end { text-align: right; }
+          </style>
+        </head>
+        <body>
+          <h2>Laporan Buku Kas Warga</h2>
+          <h5>RT/RW Digital — Dicetak pada ${tanggalCetak}</h5>
+          <div class="table-responsive">${table}</div>
+          <br><br>
+          <div class="text-end">
+            <p>Mengetahui,</p>
+            <p><strong>Pengurus RT/RW</strong></p>
+            <br><br><br>
+            <p>(___________________)</p>
+          </div>
+        </body>
+        </html>
+      `;
+
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(laporanHTML);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      
+      showNotification('info', 'Cetak Laporan', 'Laporan buku kas sedang dicetak');
+    }
+
+    // Export data
+    function exportData() {
+      showNotification('success', 'Export Berhasil', 'Data berhasil diexport ke format Excel');
+    }
+
+    // Initialize everything when page loads
+    window.onload = function() {
+      if (role === "pengurus") {
+        // Load data untuk dashboard
+        loadPendingUsers();
+        loadTotalPenduduk();
+        loadPenduduk();
+        initChart();
+        loadSuratList();
+        loadInformasi();
+        loadInfoAktif();
+        loadAktivitasTerbaru();
+        loadStatistikSistem();
+        
+        // Initialize reset modal functionality
+        document.getElementById('confirmReset').addEventListener('change', function() {
+          document.getElementById('resetButton').disabled = !this.checked;
+        });
+        
+        document.getElementById('resetButton').addEventListener('click', function() {
+          showNotification('warning', 'Database Reset', 'Database telah direset (simulasi)');
+          const modal = bootstrap.Modal.getInstance(document.getElementById('resetModal'));
+          modal.hide();
+        });
+        
+        // Test notification system
+        setTimeout(() => {
+          showNotification('info', 'Selamat Datang', `Halo ${username}! Selamat menggunakan dashboard pengurus`);
+        }, 1000);
+      } else {
+        showNotification('error', 'Akses Ditolak', 'Anda tidak memiliki akses ke halaman ini!');
+        setTimeout(() => {
+          window.location.href = "/loginpage";
+        }, 2000);
+      }
+    };
+  </script>
+</body>
+</html>

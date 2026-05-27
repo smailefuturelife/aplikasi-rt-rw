@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Aplikasi RT/RW Digital</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <!-- LottieFiles -->
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f7faff;
+      height: 100vh;
+    }
+    .login-container {
+      display: flex;
+      height: 100vh;
+    }
+    .login-left {
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      flex: 1;
+      position: relative;
+    }
+    .back-home {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 1.5rem;
+      color: white;
+      text-decoration: none;
+    }
+    .back-home:hover {
+      color: #ddd;
+    }
+    .login-right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+    .login-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      animation: fadeInUp 1s ease;
+      position: relative;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .btn-login {
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      padding: 12px;
+    }
+    .btn-login:hover {
+      opacity: 0.9;
+    }
+    .form-control {
+      border-radius: 10px;
+      padding: 12px;
+    }
+    #loginMessage {
+      display: none;
+      margin-bottom: 15px;
+      animation: fadeInUp 0.5s ease;
+    }
+    @media(max-width: 768px) {
+      .login-container {
+        flex-direction: column;
+      }
+      .login-left {
+        height: 40vh;
+      }
+      .login-right {
+        height: 60vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    
+    <!-- Left Side -->
+    <div class="login-left text-center">
+      <a href="/" class="back-home"><i class="bi bi-arrow-left-circle"></i></a>
+      
+      <lottie-player src="https://assets7.lottiefiles.com/packages/lf20_kyu7xb1v.json"
+                     background="transparent"
+                     speed="1"
+                     style="width: 300px; height: 300px;"
+                     loop autoplay></lottie-player>
+      <h2 class="fw-bold mt-3">Aplikasi RT/RW Digital</h2>
+      <p>Melayani administrasi & informasi warga dengan lebih mudah dan transparan</p>
+    </div>
+
+    <!-- Right Side (Login Form) -->
+    <div class="login-right">
+      <div class="login-card">
+        <h3 class="text-center mb-4">Masuk Akun</h3>
+        
+        <!-- Pesan login -->
+        <div id="loginMessage" class="alert text-center" role="alert"></div>
+
+        <form id="loginForm">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" placeholder="Masukkan Username" required>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Kata Sandi</label>
+            <input type="password" class="form-control" id="password" placeholder="Masukkan Kata Sandi" required>
+          </div>
+          <button type="submit" class="btn btn-login w-100">Login</button>
+        </form>
+
+        <hr class="my-4">
+        <p class="small text-center">Belum punya akun? 
+          <a href="/registerpage" class="fw-semibold">Buat Akun</a>
+        </p>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const loginMessage = document.getElementById("loginMessage");
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      // simpan ke localStorage
+      localStorage.setItem("username", result.username);
+      localStorage.setItem("role", result.role);
+      localStorage.setItem("status", result.status);
+
+      loginMessage.className = "alert alert-success text-center";
+      loginMessage.textContent = "✅ Login berhasil";
+      loginMessage.style.display = "block";
+
+      setTimeout(() => {
+  if (result.role === "masyarakat") {
+    if (result.need_data === true) {
+      // kalau belum isi penduduk → ke formulir
+      window.location.href = "/formulir_penduduk.html";
+    } else {
+      // kalau sudah isi → ke dashboard masyarakat
+      window.location.href = "/dashboard_masyarakat.html";
+    }
+  } else if (result.role === "pengurus") {
+    window.location.href = "/dashboard_pengurus.html";
+  } else {
+    window.location.href = "/dashboard.html"; // fallback
+  }
+}, 1000);
+
+
+    } else {
+      loginMessage.className = "alert alert-danger text-center";
+      loginMessage.textContent = "❌ Login gagal: " + (result.detail || "Terjadi kesalahan");
+      loginMessage.style.display = "block";
+    }
+
+  } catch (error) {
+    // 🔹 ini yang hilang di kode kamu sebelumnya
+    loginMessage.className = "alert alert-warning text-center";
+    loginMessage.textContent = "⚠️ Gagal koneksi ke server";
+    loginMessage.style.display = "block";
+    console.error("Login error:", error);
+  }
+});
+</script>
+</body>
+</html>

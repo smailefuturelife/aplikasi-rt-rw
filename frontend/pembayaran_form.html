@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pembayaran Iuran - RT/RW Digital</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 650px;
+      margin-top: 80px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+    h3 {
+      color: #4361ee;
+      font-weight: 700;
+      text-align: center;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #4361ee, #3a0ca3);
+      border: none;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .back-link { text-align: center; margin-top: 20px; }
+    .back-link a {
+      text-decoration: none;
+      color: #3f37c9;
+      font-weight: 600;
+    }
+    .va-box {
+      background: #f8f9ff;
+      border: 2px dashed #3a0ca3;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .va-box h5 {
+      color: #3a0ca3;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h3><i class="bi bi-credit-card me-2"></i>Form Pembayaran Iuran</h3>
+  <p class="text-center text-muted mb-4">Silakan isi data pembayaran iuran bulanan Anda dengan benar.</p>
+
+  <!-- FORM PEMBAYARAN -->
+  <form id="formPembayaran" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label class="form-label">Nama Pengguna</label>
+      <input type="text" class="form-control" id="username" readonly>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Bulan Iuran</label>
+      <input type="text" class="form-control" id="bulan" readonly>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Nominal Pembayaran</label>
+      <input type="text" class="form-control" value="Rp 50.000" readonly>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Metode Pembayaran</label>
+      <select class="form-select" id="metode" required>
+        <option value="">Pilih metode pembayaran</option>
+        <option value="transfer">Transfer Bank (Virtual Account)</option>
+        <option value="tunai">Tunai ke RT</option>
+      </select>
+    </div>
+
+    <!-- Virtual Account -->
+    <div class="va-box" id="vaBox" style="display:none;">
+      <p class="text-muted mb-1">Silakan transfer ke nomor Virtual Account berikut:</p>
+      <h5 id="vaNumber">70001082210501064</h5>
+      <small class="text-muted">Atas nama: RT/RW Digital</small>
+    </div>
+
+    <!-- Upload Bukti -->
+    <div class="mb-3" id="buktiUpload" style="display:none;">
+      <label class="form-label">Upload Bukti Pembayaran (jika transfer)</label>
+      <input type="file" class="form-control" id="bukti" accept="image/*">
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 mt-2">
+      <i class="bi bi-send me-2"></i>Kirim Pembayaran
+    </button>
+  </form>
+
+  <div class="back-link">
+    <a href="dashboard_masyarakat.html"><i class="bi bi-arrow-left"></i> Kembali ke Dashboard</a>
+  </div>
+</div>
+
+<script>
+  // Ambil username dari localStorage
+  const username = localStorage.getItem("username") || "warga_rt";
+  document.getElementById("username").value = username;
+  document.getElementById("bulan").value = new Date().toLocaleString("id-ID", { month: "long", year: "numeric" });
+
+  // Tampilkan Virtual Account & upload jika metode transfer
+  const metodeSelect = document.getElementById("metode");
+  metodeSelect.addEventListener("change", e => {
+    const showTransfer = e.target.value === "transfer";
+    document.getElementById("vaBox").style.display = showTransfer ? "block" : "none";
+    document.getElementById("buktiUpload").style.display = showTransfer ? "block" : "none";
+  });
+
+  // Kirim data pembayaran
+  document.getElementById("formPembayaran").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const metode = metodeSelect.value;
+    const bulan = document.getElementById("bulan").value;
+    const buktiFile = document.getElementById("bukti").files[0];
+
+    if (!metode) return alert("Pilih metode pembayaran terlebih dahulu!");
+
+    const formData = new FormData();
+    formData.append("metode", metode);
+    formData.append("bulan", bulan);
+    if (buktiFile) formData.append("bukti", buktiFile);
+
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/bayar-iuran/${username}`, {
+        method: "POST",
+        body: formData
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        alert("✅ Pembayaran berhasil dikirim!");
+        window.location.href = "dashboard_masyarakat.html";
+      } else {
+        alert("❌ Gagal: " + (result.detail || "Terjadi kesalahan."));
+      }
+    } catch (err) {
+      alert("⚠️ Gagal terhubung ke server.");
+      console.error(err);
+    }
+  });
+</script>
+
+</body>
+</html>

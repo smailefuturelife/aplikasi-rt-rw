@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buku Kas Tahunan - Warga</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    /* 🌈 Global Styles */
+    body {
+      background: linear-gradient(135deg, #e0f7fa, #e3f2fd);
+      font-family: "Poppins", sans-serif;
+      min-height: 100vh;
+    }
+
+    /* 🌟 Navbar */
+    .navbar {
+      background: linear-gradient(90deg, #3a0ca3, #4361ee, #4cc9f0);
+      color: white;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .navbar-brand i {
+      transition: transform 0.3s ease;
+    }
+
+    .navbar-brand:hover i {
+      transform: translateX(-3px);
+    }
+
+    /* 🧊 Card Container */
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      border: none;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    /* 📘 Table */
+    .table thead {
+      background: linear-gradient(90deg, #4361ee, #4cc9f0);
+      color: #fff;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f1faff;
+      transition: 0.3s;
+    }
+
+    /* 💬 Status */
+    .status-lunas {
+      color: #00b341;
+      font-weight: 600;
+    }
+
+    .status-menunggu {
+      color: #ffb200;
+      font-weight: 600;
+    }
+
+    .status-ditolak {
+      color: #e63946;
+      font-weight: 600;
+    }
+
+    /* 💰 Total Section */
+    .total-box {
+      background: linear-gradient(90deg, #4cc9f0, #4895ef);
+      color: white;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: inline-block;
+      margin-top: 15px;
+      animation: fadeIn 0.6s ease;
+    }
+
+    /* ✨ Animation */
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    .fade-in {
+      animation: fadeIn 0.8s ease;
+    }
+  </style>
+</head>
+<body>
+  <!-- 🔹 Navbar -->
+  <nav class="navbar navbar-dark py-3">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand d-flex align-items-center" href="/dashboard_masyarakat.html">
+        <i class="bi bi-arrow-left-circle fs-5 me-2"></i>
+        <span>Kembali ke Dashboard</span>
+      </a>
+      <span class="navbar-text fw-semibold text-white fs-5">
+        📘 Buku Kas Tahunan
+      </span>
+    </div>
+  </nav>
+
+  <!-- 🔹 Konten -->
+  <div class="container py-5 fade-in">
+    <div class="card p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold">Buku Kas - <span id="usernameDisplay" class="text-primary"></span></h4>
+        <i class="bi bi-wallet2 text-primary fs-3"></i>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr class="text-center">
+              <th>Bulan</th>
+              <th>Jumlah (Rp)</th>
+              <th>Metode</th>
+              <th>Status</th>
+              <th>Bukti Pembayaran</th>
+            </tr>
+          </thead>
+          <tbody id="kasTable">
+            <tr>
+              <td colspan="5" class="text-center text-muted py-4">Memuat data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-end">
+        <div class="total-box">
+          Total Iuran: <span id="totalIuran">Rp 0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔹 Script -->
+  <script>
+    const API_URL = "http://127.0.0.1:8000";
+    const username = localStorage.getItem("username");
+    document.getElementById("usernameDisplay").textContent = username;
+
+    async function loadBukuKas() {
+      try {
+        const response = await fetch(`${API_URL}/buku-kas/${username}`);
+        const data = await response.json();
+
+        const tableBody = document.getElementById("kasTable");
+        tableBody.innerHTML = "";
+
+        if (!data.length) {
+          tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-3">Belum ada data pembayaran</td></tr>`;
+          return;
+        }
+
+        let total = 0;
+        data.forEach((item) => {
+          total += item.jumlah;
+
+          const buktiLink = item.bukti
+            ? `<a href="${API_URL}/bukti_pembayaran/${item.bukti}" target="_blank" class="btn btn-sm btn-outline-primary">Lihat Bukti</a>`
+            : "-";
+
+          let statusClass = "";
+          if (item.status.toLowerCase().includes("lunas") || item.status === "verified") {
+            statusClass = "status-lunas";
+          } else if (item.status.toLowerCase().includes("menunggu") || item.status.toLowerCase().includes("pending")) {
+            statusClass = "status-menunggu";
+          } else {
+            statusClass = "status-ditolak";
+          }
+
+          tableBody.innerHTML += `
+            <tr class="text-center">
+              <td>${item.bulan}</td>
+              <td>Rp ${item.jumlah.toLocaleString("id-ID")}</td>
+              <td>${item.metode}</td>
+              <td class="${statusClass}">${item.status}</td>
+              <td>${buktiLink}</td>
+            </tr>
+          `;
+        });
+
+        document.getElementById("totalIuran").textContent = `Rp ${total.toLocaleString("id-ID")}`;
+      } catch (error) {
+        console.error("Gagal memuat data:", error);
+        document.getElementById("kasTable").innerHTML = `<tr><td colspan="5" class="text-center text-danger">Gagal memuat data!</td></tr>`;
+      }
+    }
+
+    window.onload = loadBukuKas;
+  </script>
+</body>
+</html>

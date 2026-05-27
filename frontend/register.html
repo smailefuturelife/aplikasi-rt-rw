@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buat Akun - Aplikasi RT/RW Digital</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f7faff;
+      font-family: 'Poppins', sans-serif;
+    }
+    .register-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      padding: 40px;
+      width: 100%;
+      max-width: 480px;
+      margin: 50px auto;
+      position: relative;
+    }
+    .btn-register {
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      padding: 12px;
+    }
+    #registerMessage {
+      display: none;
+      margin-bottom: 15px;
+      animation: fadeInUp 0.5s ease;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="register-card">
+    <h3 class="text-center mb-4">Buat Akun Baru</h3>
+
+    <!-- Pesan daftar -->
+    <div id="registerMessage" class="alert text-center" role="alert"></div>
+
+    <form id="registerForm">
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" id="username" class="form-control" required placeholder="Masukkan username">
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Kata Sandi</label>
+        <input type="password" id="password" class="form-control" required placeholder="Buat kata sandi yang kuat">
+      </div>
+
+      <div class="mb-3">
+        <label for="role" class="form-label">Jenis Akun</label>
+        <select id="role" class="form-control" required>
+          <option value="">Pilih jenis akun</option>
+          <option value="masyarakat">Masyarakat</option>
+          <option value="pengurus">Pengurus</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-register w-100">Daftar Sekarang</button>
+    </form>
+
+    <hr>
+    <p class="text-center small mt-3">
+      Sudah punya akun? 
+      <a href="/loginpage" class="login-link">Login di sini</a>
+    </p>
+  </div>
+
+  <script>
+    // Submit form
+    document.getElementById("registerForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const role = document.getElementById("role").value;
+
+      const registerMessage = document.getElementById("registerMessage");
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username,
+            password,
+            role
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          registerMessage.className = "alert alert-success text-center";
+          registerMessage.textContent = "✅ Akun berhasil dibuat";
+          registerMessage.style.display = "block";
+
+          setTimeout(() => {
+            window.location.href = "/loginpage";
+          }, 1500);
+        } else {
+          registerMessage.className = "alert alert-danger text-center";
+          registerMessage.textContent = "❌ Gagal: " + (result.detail || "Terjadi kesalahan");
+          registerMessage.style.display = "block";
+        }
+      } catch (error) {
+        registerMessage.className = "alert alert-warning text-center";
+        registerMessage.textContent = "⚠️ Gagal koneksi ke server";
+        registerMessage.style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>

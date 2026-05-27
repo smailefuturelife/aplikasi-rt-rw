@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - RT/RW Digital</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      color: white;
+      margin: 0;
+    }
+    .loading-text {
+      font-size: 1.2em;
+      text-align: center;
+    }
+  </style>
+  <script>
+    // Redirect berdasarkan role yang disimpan di localStorage
+    window.onload = function() {
+      const role = localStorage.getItem("role");
+      const username = localStorage.getItem("username");
+      
+      console.log("Redirecting - Username:", username, "Role:", role);
+      
+      if (!username) {
+        window.location.href = "/loginpage";
+        return;
+      }
+      
+      if (role === "pengurus") {
+        window.location.href = "/dashboard_pengurus.html";
+      } else {
+        window.location.href = "/dashboard_masyarakat.html";
+      }
+    };
+  </script>
+</head>
+<body>
+  <div class="loading-text">
+    <p>🔄 Mengarahkan ke dashboard...</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RT/RW Digital - Dashboard Masyarakat</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --secondary: #3f37c9;
+      --success: #4cc9f0;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gradient: linear-gradient(135deg, #4361ee, #3a0ca3);
+      --gradient-light: linear-gradient(135deg, #4cc9f0, #4361ee);
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: #333;
+      min-height: 100vh;
+    }
+    
+    /* Sidebar Styles */
+    .sidebar {
+      width: 280px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: var(--gradient);
+      color: #fff;
+      padding-top: 20px;
+      overflow-y: auto;
+      z-index: 1000;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .sidebar-header {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 10px;
+    }
+    
+    .sidebar-header h4 {
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .sidebar-header h4 i {
+      font-size: 1.8rem;
+    }
+    
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      border-radius: 10px;
+      margin: 6px 12px;
+      transition: all 0.3s;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .sidebar a i {
+      margin-right: 12px;
+      font-size: 1.2rem;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .sidebar a:hover, .sidebar a.active {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateX(5px);
+    }
+    
+    .sidebar a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: white;
+      transform: scaleY(0);
+      transition: transform 0.3s;
+    }
+    
+    .sidebar a.active::after {
+      transform: scaleY(1);
+    }
+    
+    /* Content Styles */
+    .content {
+      margin-left: 280px;
+      padding: 20px;
+      min-height: 100vh;
+      transition: margin-left 0.3s;
+    }
+    
+    /* Topbar Styles */
+    .topbar {
+      background: #fff;
+      padding: 15px 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    
+    .topbar h5 {
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gradient-light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-weight: bold;
+    }
+    
+    /* Card Styles */
+    .card {
+      border-radius: 16px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.07);
+      margin-bottom: 25px;
+      border: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+      overflow: hidden;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+      background: white;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 18px 20px;
+      font-weight: 600;
+    }
+    
+    .card-body {
+      padding: 20px;
+    }
+    
+    /* Dashboard Stats */
+    .stat-card {
+      text-align: center;
+      padding: 25px 15px;
+      border-radius: 16px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 0;
+    }
+    
+    .stat-card .bi {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .stat-card h3 {
+      font-weight: 700;
+      margin-bottom: 5px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .stat-card p {
+      margin: 0;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Section Management */
+    .section {
+      display: none;
+    }
+    
+    .section.active {
+      display: block;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    
+    /* Profile Styles */
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 25px;
+      margin-bottom: 25px;
+    }
+    
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: var(--gradient-light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 2.8rem;
+      font-weight: bold;
+      box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3);
+    }
+    
+    .profile-info h5 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+    
+    .profile-info p {
+      margin: 5px 0;
+      color: #555;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    /* Family Member Cards */
+    .anggota-card {
+      border-radius: 12px;
+      background: #f9f9f9;
+      padding: 18px;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .anggota-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .anggota-card h6 {
+      margin: 0;
+      font-weight: 600;
+    }
+    
+    .anggota-card small {
+      color: #777;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    /* Form Styles */
+    .form-control, .form-select {
+      border-radius: 10px;
+      padding: 12px 15px;
+      border: 1px solid #e1e5ee;
+      transition: all 0.3s;
+    }
+    
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+    }
+    
+    /* Button Styles */
+    .btn {
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: var(--gradient);
+      border: none;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(67, 97, 238, 0.3);
+    }
+    
+    /* Mobile Menu Toggle */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1100;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      width: 45px;
+      height: 45px;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .content {
+        margin-left: 0;
+      }
+      
+      .menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+      }
+      
+      .overlay.active {
+        display: block;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .content {
+        padding: 15px;
+      }
+      
+      .topbar {
+        padding: 12px 18px;
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+      }
+      
+      .user-info {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--secondary);
+    }
+  </style>
+
+  <!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+  <!-- Mobile Menu Toggle -->
+  <button class="menu-toggle" id="menuToggle">
+    <i class="bi bi-list"></i>
+  </button>
+  
+  <!-- Overlay for Mobile -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h4><i class="bi bi-house-heart"></i> RT/RW Digital</h4>
+    </div>
+    <a href="#" class="active" onclick="showSection('dashboard')"><i class="bi bi-house-door"></i> Beranda</a>
+    <a href="#" onclick="showSection('profil')"><i class="bi bi-person"></i> Profil Saya</a>
+    <a href="#" onclick="showSection('informasi')"><i class="bi bi-megaphone"></i> Informasi</a>
+    <a href="#" onclick="showSection('surat')"><i class="bi bi-file-earmark-text"></i> Surat</a>
+    <a href="#" onclick="showSection('pembayaran')"><i class="bi bi-credit-card"></i> Pembayaran Iuran</a>
+    <a href="#" onclick="showSection('bantuan')"><i class="bi bi-question-circle"></i> Bantuan</a>
+  </div>
+
+  <!-- Content -->
+  <div class="content" id="content">
+    <!-- Topbar -->
+    <div class="topbar">
+      <h5>Masyarakat</h5>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <span id="userInfo" class="fw-semibold"></span>
+        <button class="btn btn-outline-danger btn-sm" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="section active">
+      <div class="row g-4">
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card" style="background: linear-gradient(135deg, #4361ee, #3a0ca3);">
+            <i class="bi bi-megaphone"></i>
+            <h3 id="infoCount">5</h3>
+            <p>Informasi Terbaru</p>
+          </div>
+        </div>
+
+      <div class="col-md-3 col-sm-6">
+      <div class="stat-card" 
+       style="background: linear-gradient(135deg, #4cc9f0, #4361ee); cursor:pointer;" 
+       onclick="bukaBukuKas()">
+       <i class="bi bi-journal-text"></i>
+      <h3 id="bukuKasCount">Catatan</h3>
+    <p>Buku Kas</p>
+  </div>
+</div>
+
+<div class="col-md-3 col-sm-6">
+  <div class="stat-card" id="cardIuran" style="background: linear-gradient(135deg, #f72585, #b5179e);">
+    <i class="bi bi-credit-card"></i>
+    <h3 id="iuranJumlah">Rp 50.000</h3>
+    <p id="iuranKeterangan">Iuran Bulan Ini</p>
+  </div>
+</div>
+
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card" style="background: linear-gradient(135deg, #4895ef, #3f37c9);">
+            <i class="bi bi-check-circle"></i>
+            <h3 id="statusAkun">Aktif</h3>
+            <p>Status Akun</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row mt-4">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <i class="bi bi-clock-history me-2"></i>Aktivitas Terbaru
+            </div>
+            <div class="card-body">
+              <div class="list-group list-group-flush">
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="mb-1">Pengajuan Surat Domisili</h6>
+                    <p class="mb-0 text-muted small">Status: <span class="badge bg-warning">Menunggu</span></p>
+                  </div>
+                  <small class="text-muted">2 hari lalu</small>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="mb-1">Pembayaran Iuran Maret</h6>
+                    <p class="mb-0 text-muted small">Status: <span class="badge bg-success">Lunas</span></p>
+                  </div>
+                  <small class="text-muted">5 hari lalu</small>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="mb-1">Informasi Kegiatan Bersih-bersih</h6>
+                    <p class="mb-0 text-muted small">Dibaca</p>
+                  </div>
+                  <small class="text-muted">1 minggu lalu</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <i class="bi bi-calendar-event me-2"></i>Kegiatan Mendatang
+            </div>
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-3">
+                <div class="bg-primary text-white rounded p-2 me-3 text-center" style="width: 50px;">
+                  <div class="fw-bold">15</div>
+                  <div class="small">Apr</div>
+                </div>
+                <div>
+                  <h6 class="mb-0">Kerja Bakti Lingkungan</h6>
+                  <small class="text-muted">Minggu, 08.00 - selesai</small>
+                </div>
+              </div>
+              <div class="d-flex align-items-center">
+                <div class="bg-success text-white rounded p-2 me-3 text-center" style="width: 50px;">
+                  <div class="fw-bold">20</div>
+                  <div class="small">Apr</div>
+                </div>
+                <div>
+                  <h6 class="mb-0">Rapat Warga Bulanan</h6>
+                  <small class="text-muted">Jumat, 19.30 - selesai</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profil Section -->
+    <div id="profil" class="section">
+      <div class="card">
+        <div class="card-body">
+          <div class="profile-header">
+            <div class="profile-avatar">👤</div>
+            <div class="profile-info">
+              <h5 id="profileUsername">Nama User</h5>
+              <p><i class="bi bi-shield-lock"></i> Role: <span id="profileRole"></span></p>
+              <p><i class="bi bi-check-circle"></i> Status: <span id="profileStatus"></span></p>
+              <p><i class="bi bi-credit-card-2-front"></i> Nomor KK: <span id="profileKK">-</span></p>
+              <p><i class="bi bi-people"></i> Anggota Keluarga: <span id="profileAnggota">0</span></p>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-7">
+              <h5 class="fw-bold mb-3"><i class="bi bi-people-fill me-2"></i>Anggota Keluarga</h5>
+              <div id="anggotaList" class="mt-3"></div>
+            </div>
+            <div class="col-lg-5">
+              <h5 class="fw-bold mb-3"><i class="bi bi-shield-lock me-2"></i>Keamanan Akun</h5>
+              <div class="mt-3">
+                <div class="mb-3">
+                  <label class="form-label">Password Baru</label>
+                  <input type="password" class="form-control" placeholder="Masukkan password baru">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Konfirmasi Password</label>
+                  <input type="password" class="form-control" placeholder="Ulangi password baru">
+                </div>
+                <button class="btn btn-primary w-100">
+                  <i class="bi bi-key me-2"></i>Update Password
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informasi Section -->
+    <div id="informasi" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-megaphone me-2"></i>Informasi dan Pengumuman</h5>
+        </div>
+        <div class="card-body">
+          <div id="allInfoList" class="mt-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Surat Section -->
+<div id="surat" class="section">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Daftar Surat dari Pengurus</h5>
+      <button class="btn btn-outline-primary btn-sm" onclick="loadSurat()">
+        <i class="bi bi-arrow-repeat me-1"></i>Refresh
+      </button>
+    </div>
+    <div class="card-body">
+      <div id="suratList" class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead class="table-primary">
+            <tr>
+              <th>#</th>
+              <th>Nama File</th>
+              <th>Jenis Surat</th>
+              <th>Diupload Oleh</th>
+              <th>Tanggal Upload</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="suratTableBody">
+            <tr>
+              <td colspan="7" class="text-center text-muted py-4">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Surat Section -->
+    <div id="surat" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Dokumen Surat</h5>
+        </div>
+        <div class="card-body">
+          <form id="ajukanSuratForm" class="mt-3">
+            <div class="mb-3">
+              <label class="form-label">Jenis Surat</label>
+              <select class="form-select" required>
+                <option value="">Pilih jenis surat</option>
+                <option value="domisili">Surat Keterangan Domisili</option>
+                <option value="tidak_mampu">Surat Keterangan Tidak Mampu</option>
+                <option value="usaha">Surat Keterangan Usaha</option>
+                <option value="lahir">Surat Keterangan Kelahiran</option>
+                <option value="kematian">Surat Keterangan Kematian</option>
+                <option value="lainnya">Surat Keterangan Lainnya</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Keterangan Tambahan</label>
+              <textarea class="form-control" rows="4" placeholder="Jelaskan keperluan dan alasan pengajuan surat..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-send me-2"></i>Ajukan Surat
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pembayaran Section -->
+    <div id="pembayaran" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-credit-card me-2"></i>Pembayaran Iuran</h5>
+        </div>
+        <div class="card-body">
+          <div class="row mt-3">
+            <div class="col-md-6 mb-4">
+              <div class="card bg-primary text-white">
+                <div class="card-body">
+                  <h5>Iuran Bulan Ini</h5>
+                  <h2>Rp 50.000</h2>
+                  <p class="mb-3">Batas pembayaran: Tanggal 20 Akhir bulan</p>
+                  <button class="btn btn-light w-100" onclick="window.location.href='pembayaran_form.html'">
+                  <i class="bi bi-wallet2 me-2"></i>Bayar Sekarang
+                </button>
+
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header">
+                  <h6 class="mb-0">Riwayat Pembayaran</h6>
+                </div>
+                <div class="card-body p-0">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      Maret 2025
+                      <span class="badge bg-success">Lunas</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      Februari 2025
+                      <span class="badge bg-success">Lunas</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      Januari 2025
+                      <span class="badge bg-success">Lunas</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      Desember 2024
+                      <span class="badge bg-success">Lunas</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Buku Kas Section -->
+<div id="bukuKas" class="section">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0"><i class="bi bi-journal-text me-2"></i>Buku Kas Bulanan</h5>
+      <button class="btn btn-outline-primary btn-sm" onclick="printBukuKas()">
+        <i class="bi bi-printer me-1"></i> Print Buku Kas
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead class="table-primary">
+            <tr>
+              <th>Bulan</th>
+              <th>Jumlah</th>
+              <th>Metode</th>
+              <th>Status</th>
+              <th>Bukti Pembayaran</th>
+            </tr>
+          </thead>
+          <tbody id="bukuKasBody">
+            <tr>
+              <td colspan="5" class="text-center text-muted py-3">Memuat data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Bantuan Section -->
+<div id="bantuan" class="section py-5" style="background: linear-gradient(135deg, #e8f5e9, #e3f2fd);">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h3 class="fw-bold text-success mb-2"><i class="bi bi-question-circle me-2"></i>Bantuan & Panduan</h3>
+      <p class="text-muted">Hubungi pengurus RT/RW atau baca panduan berikut untuk menggunakan sistem dengan mudah.</p>
+    </div>
+
+    <div class="row g-4">
+      <!-- Kontak RT/RW -->
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100 hover-card">
+          <div class="card-body">
+            <h5 class="fw-bold text-primary mb-4"><i class="bi bi-telephone me-2"></i>Kontak RT/RW</h5>
+            <div class="d-flex align-items-start mb-3">
+              <div class="icon-circle bg-success text-white me-3"><i class="bi bi-person-circle"></i></div>
+              <div>
+                <h6 class="mb-1 fw-semibold">Ketua RT</h6>
+                <a href="https://wa.me/6281234567890" target="_blank" class="text-decoration-none text-success">
+                  <i class="bi bi-whatsapp"></i> 0812-3456-7890
+                </a>
+              </div>
+            </div>
+            <div class="d-flex align-items-start">
+              <div class="icon-circle bg-info text-white me-3"><i class="bi bi-person-circle"></i></div>
+              <div>
+                <h6 class="mb-1 fw-semibold">Sekretaris</h6>
+                <a href="https://wa.me/6281345678901" target="_blank" class="text-decoration-none text-success">
+                  <i class="bi bi-whatsapp"></i> 0813-4567-8901
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panduan Penggunaan -->
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100 hover-card">
+          <div class="card-body">
+            <h5 class="fw-bold text-primary mb-4"><i class="bi bi-info-circle me-2"></i>Panduan Penggunaan</h5>
+            <div class="list-group list-group-flush">
+              <div class="list-group-item border-0 ps-0">
+                <h6 class="mb-1 fw-semibold"><i class="bi bi-envelope-paper text-success me-2"></i>Surat</h6>
+                <p class="mb-0 text-muted small">Klik menu "Surat" untuk membuat surat keterangan dengan mengisi form yang tersedia.</p>
+              </div>
+              <div class="list-group-item border-0 ps-0">
+                <h6 class="mb-1 fw-semibold"><i class="bi bi-bell text-warning me-2"></i>Informasi</h6>
+                <p class="mb-0 text-muted small">Periksa menu "Informasi" secara berkala untuk mengetahui pengumuman terbaru dari pengurus.</p>
+              </div>
+              <div class="list-group-item border-0 ps-0">
+                <h6 class="mb-1 fw-semibold"><i class="bi bi-cash-coin text-primary me-2"></i>Pembayaran Iuran</h6>
+                <p class="mb-0 text-muted small">Gunakan menu "Pembayaran Iuran" untuk membayar iuran bulanan secara online dengan aman.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  }
+
+  .icon-circle {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.2rem;
+  }
+
+  .section h3 {
+    letter-spacing: 0.5px;
+  }
+</style>
+  <script>
+    // Mobile menu toggle functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const content = document.getElementById('content');
+    
+    menuToggle.addEventListener('click', function() {
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    });
+    
+    overlay.addEventListener('click', function() {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+    
+    // User data
+    const username = localStorage.getItem("username") || "Warga RT 05";
+    const role = localStorage.getItem("role") || "Warga";
+    
+    if (!localStorage.getItem("username")) {
+      // For demo purposes, set some default values
+      localStorage.setItem("username", "Warga RT 05");
+      localStorage.setItem("role", "Warga");
+    }
+    
+    document.getElementById("userInfo").innerText = username;
+    document.getElementById("userAvatar").innerText = username.charAt(0);
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "/loginpage";
+    }
+
+    function showSection(id) {
+      document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      document.querySelectorAll(".sidebar a").forEach(link => link.classList.remove("active"));
+      event.target.classList.add("active");
+      
+      // Close sidebar on mobile after selection
+      if (window.innerWidth < 992) {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      }
+    }
+
+
+// ✅ Tombol Bayar Sekarang
+document.querySelector("#pembayaran .btn-light").addEventListener("click", async function() {
+  if (!confirm("Yakin ingin membayar iuran bulan ini?")) return;
+
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/bayar-iuran/${username}`, {
+      method: "POST"
+    });
+    const result = await response.json();
+
+    if (response.ok) {
+      alert("✅ " + result.message);
+      loadRiwayatIuran(); // update daftar riwayat
+    } else {
+      alert("❌ Gagal: " + result.detail);
+    }
+  } catch (err) {
+    alert("⚠️ Terjadi kesalahan koneksi ke server.");
+  }
+});
+
+// ✅ Load riwayat pembayaran otomatis
+async function loadRiwayatIuran() {
+  const listContainer = document.querySelector("#pembayaran ul.list-group");
+  const bayarButton = document.querySelector("#pembayaran .btn-light");
+  listContainer.innerHTML = `
+    <li class="list-group-item text-center text-muted">
+      <div class="spinner-border text-primary" role="status"></div>
+    </li>
+  `;
+
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/riwayat-iuran/${username}`);
+    if (!response.ok) throw new Error("Gagal ambil data");
+
+    const data = await response.json();
+    listContainer.innerHTML = "";
+
+    if (data.length === 0) {
+      listContainer.innerHTML = `<li class="list-group-item text-center text-muted">Belum ada pembayaran.</li>`;
+      bayarButton.style.display = "block";
+      return;
+    }
+
+    let sudahLunasBulanIni = false;
+    const bulanSekarang = new Date().toLocaleString("id-ID", { month: "long", year: "numeric" });
+
+    data.forEach(item => {
+      const bulan = item.bulan || "-";
+      const status = item.status || "Belum Lunas";
+      const badgeClass = status === "verified" ? "bg-success" : "bg-warning";
+      if (status === "verified" && bulan === bulanSekarang) sudahLunasBulanIni = true;
+
+      listContainer.innerHTML += `
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          ${bulan}
+          <span class="badge ${badgeClass}">${status}</span>
+        </li>
+      `;
+    });
+
+    // ✅ Sembunyikan tombol jika sudah lunas bulan ini
+    if (sudahLunasBulanIni) {
+      bayarButton.outerHTML = `<div class="alert alert-success mt-2 mb-0 text-center">
+        ✅ Iuran bulan ${bulanSekarang} sudah Lunas.
+      </div>`;
+    } else {
+      bayarButton.style.display = "block";
+    }
+
+  } catch (err) {
+    console.error(err);
+    listContainer.innerHTML = `<li class="list-group-item text-danger text-center">Gagal memuat data pembayaran.</li>`;
+  }
+}
+
+  async function loadProfil() {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/profil/${username}`);
+      const data = await response.json();
+
+        document.getElementById("profileUsername").innerText = data.username;
+        document.getElementById("profileRole").innerText = data.role;
+        document.getElementById("profileStatus").innerText = data.status;
+        document.getElementById("profileKK").innerText = data.kk;
+        document.getElementById("profileAnggota").innerText = data.anggota.length;
+
+        const anggotaList = document.getElementById("anggotaList");
+        anggotaList.innerHTML = "";
+        data.anggota.forEach(a => {
+          anggotaList.innerHTML += `
+            <div class="anggota-card">
+              <h6>${a.nama}</h6>
+              <small><i class="bi bi-person-vcard"></i> NIK: ${a.nik}</small><br>
+              <small><i class="bi bi-geo-alt"></i> Alamat: ${a.alamat}</small><br>
+              <small><i class="bi bi-diagram-3"></i> Hubungan: ${a.hubungan}</small>
+            </div>
+          `;
+        });
+      } catch (err) {
+        console.error("Gagal load profil:", err);
+      }
+    }
+
+    // ✅ Ajukan Surat
+    document.getElementById("ajukanSuratForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const jenis_surat = this.querySelector("select").value;
+    const keterangan = this.querySelector("textarea").value;
+
+    const response = await fetch(`http://127.0.0.1:8000/ajukan-surat/${username}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, jenis_surat, keterangan })
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      alert("✅ Surat berhasil diajukan!");
+      this.reset();
+    } else {
+      alert("❌ Gagal: " + result.detail);
+    }
+  });
+
+    // ✅ Load informasi dari server (otomatis tampil di masyarakat)
+async function loadInformasi() {
+  const infoList = document.getElementById("allInfoList");
+  infoList.innerHTML = `
+    <div class="text-center py-3 text-muted">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2">Memuat informasi...</p>
+    </div>
+  `;
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/informasi");
+    if (!response.ok) throw new Error("Gagal mengambil data informasi");
+    const data = await response.json();
+
+    if (data.length === 0) {
+      infoList.innerHTML = `
+        <div class="alert alert-info text-center mt-3">
+          <i class="bi bi-info-circle me-2"></i>Belum ada informasi atau kegiatan terbaru dari pengurus.
+        </div>
+      `;
+      return;
+    }
+
+    // Buat daftar informasi yang tampil rapi
+    infoList.innerHTML = `
+      <div class="list-group">
+        ${data.map(item => {
+          const tanggal = new Date(item.tanggal).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+          });
+          return `
+            <div class="list-group-item">
+              <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-2 text-primary">
+                  <i class="bi bi-megaphone me-2"></i>${item.judul}
+                </h6>
+                <small class="text-muted">${tanggal}</small>
+              </div>
+              <p class="mb-0 text-muted small">Status: ${item.status || "active"}</p>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+  } catch (err) {
+    console.error(err);
+    infoList.innerHTML = `
+      <div class="alert alert-danger text-center mt-3">
+        <i class="bi bi-exclamation-triangle me-2"></i>Gagal memuat informasi dari server.
+      </div>
+    `;
+  }
+}
+
+// ✅ Load daftar surat dari pengurus
+async function loadSurat() {
+  const tableBody = document.getElementById("suratTableBody");
+  tableBody.innerHTML = `
+    <tr>
+      <td colspan="7" class="text-center text-muted py-4">
+        <div class="spinner-border text-primary" role="status"></div>
+      </td>
+    </tr>
+  `;
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/surat");
+    if (!response.ok) throw new Error("Gagal mengambil data surat");
+    const suratList = await response.json();
+
+    if (suratList.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="7" class="text-center text-muted py-4">Belum ada surat yang diupload pengurus.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    tableBody.innerHTML = "";
+    suratList.forEach((s, i) => {
+      const tanggal = new Date(s.tanggal_upload).toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
+
+      tableBody.innerHTML += `
+        <tr>
+          <td>${i + 1}</td>
+          <td><i class="bi bi-file-earmark-text me-2"></i>${s.nama_file}</td>
+          <td>${s.tipe_file || "-"}</td>
+          <td>${s.uploaded_by || "-"}</td>
+          <td>${tanggal}</td>
+          <td>
+            <a href="http://127.0.0.1:8000/files/${s.nama_file}" 
+               class="btn btn-sm btn-primary" target="_blank">
+              <i class="bi bi-download me-1"></i>Download
+            </a>
+          </td>
+        </tr>
+      `;
+    });
+  } catch (err) {
+    console.error(err);
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="7" class="text-center text-danger py-4">
+          Gagal memuat data surat. Pastikan server berjalan.
+        </td>
+      </tr>
+    `;
+  }
+}
+
+// 1️⃣ Ambil jumlah informasi terbaru dan tampilkan
+async function loadDashboardInfo() {
+  try {
+    const response = await fetch("http://127.0.0.1:8000/informasi");
+    const data = await response.json();
+
+    // Tampilkan jumlah informasi aktif
+    document.getElementById("infoCount").innerText = data.length;
+
+    // Ambil 2 kegiatan mendatang
+    const kegiatanContainer = document.querySelector("#dashboard .card-body");
+    const kegiatanCard = document.querySelector("#dashboard .card .bi-calendar-event").closest(".card").querySelector(".card-body");
+    kegiatanCard.innerHTML = "";
+
+    if (data.length === 0) {
+      kegiatanCard.innerHTML = `<p class="text-center text-muted mt-2">Belum ada kegiatan mendatang.</p>`;
+      return;
+    }
+
+    const upcoming = data.slice(0, 2);
+    upcoming.forEach(item => {
+      const tanggal = new Date(item.tanggal);
+      const day = tanggal.getDate();
+      const month = tanggal.toLocaleString("id-ID", { month: "short" });
+
+      kegiatanCard.innerHTML += `
+        <div class="d-flex align-items-center mb-3">
+          <div class="bg-primary text-white rounded p-2 me-3 text-center" style="width: 50px;">
+            <div class="fw-bold">${day}</div>
+            <div class="small">${month}</div>
+          </div>
+          <div>
+            <h6 class="mb-0">${item.judul}</h6>
+          </div>
+        </div>
+      `;
+    });
+  } catch (err) {
+    console.error("Gagal memuat info dashboard:", err);
+    document.getElementById("infoCount").innerText = "0";
+  }
+}
+
+// 2️⃣ Aktivitas terbaru user (ambil dari surat & pembayaran)
+async function loadAktivitasTerbaru() {
+  const container = document.querySelector("#dashboard .list-group");
+  container.innerHTML = `
+    <div class="text-center text-muted py-2">
+      <div class="spinner-border text-primary" role="status"></div>
+    </div>
+  `;
+
+  try {
+    const [suratRes, bayarRes] = await Promise.all([
+      fetch(`http://127.0.0.1:8000/surat-user/${username}`),
+      fetch(`http://127.0.0.1:8000/riwayat-iuran/${username}`)
+    ]);
+
+    const suratData = suratRes.ok ? await suratRes.json() : [];
+    const bayarData = bayarRes.ok ? await bayarRes.json() : [];
+
+    let aktivitas = [];
+
+    suratData.forEach(s => {
+      aktivitas.push({
+        judul: `Pengajuan Surat ${s.jenis_surat}`,
+        status: s.status || "Menunggu",
+        waktu: s.tanggal_pengajuan,
+        icon: "bi-file-earmark-text"
+      });
+    });
+
+    bayarData.forEach(b => {
+      aktivitas.push({
+        judul: `Pembayaran Iuran ${b.bulan}`,
+        status: b.status || "pending",
+        waktu: b.tanggal,
+        icon: "bi-credit-card"
+      });
+    });
+
+    // Urutkan berdasarkan tanggal terbaru
+    aktivitas.sort((a, b) => new Date(b.waktu) - new Date(a.waktu));
+
+    // Ambil 3 aktivitas terakhir
+    aktivitas = aktivitas.slice(0, 3);
+
+    if (aktivitas.length === 0) {
+      container.innerHTML = `
+        <div class="text-center text-muted py-2">
+          Belum ada aktivitas terbaru.
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = aktivitas.map(a => {
+      const tanggal = new Date(a.waktu).toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "short"
+      });
+      const badge =
+        a.status.toLowerCase() === "verified"
+          ? "bg-success"
+          : a.status.toLowerCase() === "menunggu"
+          ? "bg-warning"
+          : "bg-secondary";
+
+      return `
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="mb-1"><i class="bi ${a.icon} me-1"></i>${a.judul}</h6>
+            <p class="mb-0 text-muted small">Status: <span class="badge ${badge}">${a.status}</span></p>
+          </div>
+          <small class="text-muted">${tanggal}</small>
+        </div>
+      `;
+    }).join("");
+  } catch (err) {
+    console.error("Gagal load aktivitas:", err);
+    container.innerHTML = `<div class="text-danger text-center">Gagal memuat aktivitas.</div>`;
+  }
+}
+
+  // ✅ Fungsi buka halaman Buku Kas Tahunan
+  function bukaBukuKas() {
+    window.location.href = "frontend/buku_kas_tahunan_user.html";
+  }
+
+// ✅ Update tampilan "Iuran Bulan Ini" di dashboard
+async function updateIuranBulanIni() {
+  const jumlahEl = document.getElementById("iuranJumlah");
+  const ketEl = document.getElementById("iuranKeterangan");
+
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/status-iuran/${username}`);
+    if (!response.ok) throw new Error("Gagal mengambil data iuran");
+
+    const data = await response.json();
+    console.log("📦 Data iuran:", data); // debug di console
+
+    // tampilkan sesuai status
+    if (data.status?.toLowerCase().includes("verified") || data.status?.toLowerCase().includes("lunas")) {
+      jumlahEl.innerHTML = "✅ Lunas";
+      ketEl.innerHTML = `Iuran Bulan ${data.bulan}`;
+    } else if (data.status?.toLowerCase().includes("menunggu") || data.status?.toLowerCase().includes("pending")) {
+      jumlahEl.innerHTML = "⏳ Menunggu";
+      ketEl.innerHTML = `Iuran Bulan ${data.bulan}`;
+    } else {
+      jumlahEl.innerHTML = `Rp ${data.jumlah.toLocaleString("id-ID")}`;
+      ketEl.innerHTML = `Iuran Bulan ${data.bulan}`;
+    }
+  } catch (err) {
+    console.error("Gagal memperbarui iuran bulan ini:", err);
+    jumlahEl.innerHTML = "Rp 50.000";
+    ketEl.innerHTML = "Iuran Bulan Ini";
+  }
+}
+
+  window.onload = function() {
+  loadProfil();
+  loadInformasi();
+  loadSurat();
+  loadRiwayatIuran();
+  loadDashboardInfo();    
+  loadAktivitasTerbaru(); 
+  updateIuranBulanIni(); 
+};
+</script>
+</body>
+</html>
