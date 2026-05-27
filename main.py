@@ -45,6 +45,25 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 Base.metadata.create_all(bind=engine)
+def buat_admin_default():
+    db = SessionLocal()
+    try:
+        admin = db.query(User).filter(User.username == "admin").first()
+
+        if not admin:
+            admin_baru = User(
+                username="admin",
+                password=hash_password("admin123"),
+                role="pengurus",
+                status="active"
+            )
+            db.add(admin_baru)
+            db.commit()
+            print("Admin default berhasil dibuat")
+    finally:
+        db.close()
+
+buat_admin_default()
 
 class LoginRequest(BaseModel):
     username: str
