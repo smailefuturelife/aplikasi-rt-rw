@@ -165,7 +165,7 @@
       });
 
       try {
-        const response = await fetch(`http://127.0.0.1:8000/isi-data-kk/${username}`, {
+        const response = await fetch(`/isi-data-kk/${username}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ no_kk, alamat, anggota })

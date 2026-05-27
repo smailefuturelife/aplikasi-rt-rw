@@ -909,7 +909,7 @@ document.querySelector("#pembayaran .btn-light").addEventListener("click", async
   if (!confirm("Yakin ingin membayar iuran bulan ini?")) return;
 
   try {
-    const response = await fetch(`http://127.0.0.1:8000/bayar-iuran/${username}`, {
+    const response = await fetch(`/bayar-iuran/${username}`, {
       method: "POST"
     });
     const result = await response.json();
@@ -936,7 +936,7 @@ async function loadRiwayatIuran() {
   `;
 
   try {
-    const response = await fetch(`http://127.0.0.1:8000/riwayat-iuran/${username}`);
+    const response = await fetch(`/riwayat-iuran/${username}`);
     if (!response.ok) throw new Error("Gagal ambil data");
 
     const data = await response.json();
@@ -982,7 +982,7 @@ async function loadRiwayatIuran() {
 
   async function loadProfil() {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/profil/${username}`);
+      const response = await fetch(`/profil/${username}`);
       const data = await response.json();
 
         document.getElementById("profileUsername").innerText = data.username;
@@ -1014,7 +1014,7 @@ async function loadRiwayatIuran() {
     const jenis_surat = this.querySelector("select").value;
     const keterangan = this.querySelector("textarea").value;
 
-    const response = await fetch(`http://127.0.0.1:8000/ajukan-surat/${username}`, {
+    const response = await fetch(`/ajukan-surat/${username}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, jenis_surat, keterangan })
@@ -1040,7 +1040,7 @@ async function loadInformasi() {
   `;
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/informasi");
+    const response = await fetch("/informasi");
     if (!response.ok) throw new Error("Gagal mengambil data informasi");
     const data = await response.json();
 
@@ -1098,7 +1098,7 @@ async function loadSurat() {
   `;
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/surat");
+    const response = await fetch("/surat");
     if (!response.ok) throw new Error("Gagal mengambil data surat");
     const suratList = await response.json();
 
@@ -1127,7 +1127,7 @@ async function loadSurat() {
           <td>${s.uploaded_by || "-"}</td>
           <td>${tanggal}</td>
           <td>
-            <a href="http://127.0.0.1:8000/files/${s.nama_file}" 
+            <a href="/files/${s.nama_file}" 
                class="btn btn-sm btn-primary" target="_blank">
               <i class="bi bi-download me-1"></i>Download
             </a>
@@ -1150,7 +1150,7 @@ async function loadSurat() {
 // 1️⃣ Ambil jumlah informasi terbaru dan tampilkan
 async function loadDashboardInfo() {
   try {
-    const response = await fetch("http://127.0.0.1:8000/informasi");
+    const response = await fetch("/informasi");
     const data = await response.json();
 
     // Tampilkan jumlah informasi aktif
@@ -1201,8 +1201,8 @@ async function loadAktivitasTerbaru() {
 
   try {
     const [suratRes, bayarRes] = await Promise.all([
-      fetch(`http://127.0.0.1:8000/surat-user/${username}`),
-      fetch(`http://127.0.0.1:8000/riwayat-iuran/${username}`)
+      fetch(`/surat-user/${username}`),
+      fetch(`/riwayat-iuran/${username}`)
     ]);
 
     const suratData = suratRes.ok ? await suratRes.json() : [];
@@ -1282,7 +1282,7 @@ async function updateIuranBulanIni() {
   const ketEl = document.getElementById("iuranKeterangan");
 
   try {
-    const response = await fetch(`http://127.0.0.1:8000/status-iuran/${username}`);
+    const response = await fetch(`/status-iuran/${username}`);
     if (!response.ok) throw new Error("Gagal mengambil data iuran");
 
     const data = await response.json();

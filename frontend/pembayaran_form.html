@@ -137,7 +137,7 @@
     if (buktiFile) formData.append("bukti", buktiFile);
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/bayar-iuran/${username}`, {
+      const res = await fetch(`/bayar-iuran/${username}`, {
         method: "POST",
         body: formData
       });

@@ -1115,7 +1115,7 @@
       `;
 
       try {
-        const response = await fetch(`http://127.0.0.1:8000/riwayat-iuran/${username}`);
+        const response = await fetch(`/riwayat-iuran/${username}`);
         if (!response.ok) throw new Error("Gagal ambil data");
 
         const data = await response.json();
@@ -1161,7 +1161,7 @@
 
     async function loadProfil() {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/profil/${username}`);
+        const response = await fetch(`/profil/${username}`);
         const data = await response.json();
 
         document.getElementById("profileUsername").innerText = data.username;
@@ -1204,7 +1204,7 @@
       }
 
       try {
-        const response = await fetch(`http://127.0.0.1:8000/update-password/${username}`, {
+        const response = await fetch(`/update-password/${username}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ password: newPassword })
@@ -1234,7 +1234,7 @@
       }
 
       try {
-        const response = await fetch(`http://127.0.0.1:8000/ajukan-surat/${username}`, {
+        const response = await fetch(`/ajukan-surat/${username}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, jenis_surat, keterangan })
@@ -1263,7 +1263,7 @@
       `;
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/informasi");
+        const response = await fetch("/informasi");
         if (!response.ok) throw new Error("Gagal mengambil data informasi");
         const data = await response.json();
 
@@ -1321,7 +1321,7 @@
       `;
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/surat");
+        const response = await fetch("/surat");
         if (!response.ok) throw new Error("Gagal mengambil data surat");
         const suratList = await response.json();
 
@@ -1372,7 +1372,7 @@
     // ✅ Download Surat dengan Notifikasi
     async function downloadSurat(filename) {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/download-surat/${filename}`);
+        const response = await fetch(`/download-surat/${filename}`);
         if (response.ok) {
           showNotification('success', 'Download Dimulai!', `File ${filename} sedang didownload`);
           // Logic untuk download file
@@ -1396,7 +1396,7 @@
     // 1️⃣ Ambil jumlah informasi terbaru dan tampilkan
     async function loadDashboardInfo() {
       try {
-        const response = await fetch("http://127.0.0.1:8000/informasi");
+        const response = await fetch("/informasi");
         const data = await response.json();
 
         // Tampilkan jumlah informasi aktif
@@ -1447,8 +1447,8 @@
 
       try {
         const [suratRes, bayarRes] = await Promise.all([
-          fetch(`http://127.0.0.1:8000/surat-user/${username}`),
-          fetch(`http://127.0.0.1:8000/riwayat-iuran/${username}`)
+          fetch(`/surat-user/${username}`),
+          fetch(`/riwayat-iuran/${username}`)
         ]);
 
         const suratData = suratRes.ok ? await suratRes.json() : [];
@@ -1538,7 +1538,7 @@
       const ketEl = document.getElementById("iuranKeterangan");
 
       try {
-        const response = await fetch(`http://127.0.0.1:8000/status-iuran/${username}`);
+        const response = await fetch(`/status-iuran/${username}`);
         if (!response.ok) throw new Error("Gagal mengambil data iuran");
 
         const data = await response.json();
